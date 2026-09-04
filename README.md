@@ -64,9 +64,166 @@ RexKit/
     src/api/index.js             qui dichiari le API custom
     src/custom/define.js         funzione define()
   frontend/
-    src/app/page.jsx             la tua UI
+    src/app/layout.jsx           shell HTML (comune a tutte le pagine)
+    src/app/page.jsx             homepage → /
+    src/app/globals.css          Tailwind
     src/lib/crud.js              createCrud() e q()
 ```
+
+---
+
+## Frontend (React + Next.js)
+
+Il frontend è **Next.js App Router**, non Vite e non React Router. Le route le crea il filesystem: un file in `src/app` diventa una pagina.
+
+`src/app/page.jsx` è `/`. Da lì costruisci l’applicazione.
+
+### Cartelle
+
+```
+frontend/src/
+  app/
+    layout.jsx          wrapping di tutte le pagine (html, body, css)
+    page.jsx            /
+    clienti/
+      page.jsx          /clienti
+      [id]/
+        page.jsx        /clienti/12
+    globals.css
+  components/           pezzi di UI riutilizzabili (li crei tu)
+  lib/
+    crud.js             client API
+```
+
+L’alias `@/` punta a `frontend/src/`. Importa così:
+
+```js
+import { createCrud } from '@/lib/crud.js';
+```
+
+### Routing
+
+Non installi `react-router`. Aggiungi una cartella con `page.jsx`.
+
+| File | URL |
+|---|---|
+| `src/app/page.jsx` | `/` |
+| `src/app/clienti/page.jsx` | `/clienti` |
+| `src/app/clienti/[id]/page.jsx` | `/clienti/12` |
+| `src/app/impostazioni/page.jsx` | `/impostazioni` |
+
+Esempio pagina statica:
+
+```jsx
+export default function ClientiPage() {
+  return <h1>Clienti</h1>;
+}
+```
+
+Pagina con parametro (`[id]`):
+
+```jsx
+'use client';
+
+import { useParams } from 'next/navigation';
+
+export default function ClientePage() {
+  const { id } = useParams();
+  return <h1>Cliente {id}</h1>;
+}
+```
+
+`layout.jsx` avvolge tutte le route (header, nav, font). Non duplicarlo in ogni pagina.
+
+### Link tra pagine
+
+Usa `Link` di Next, non `<a href>` (quello ricarica tutta l’app).
+
+```jsx
+import Link from 'next/link';
+
+<Link href="/clienti">Vai ai clienti</Link>
+<Link href={`/clienti/${id}`}>Dettaglio</Link>
+```
+
+Per navigare da codice (dopo un submit, un click, …):
+
+```jsx
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+const router = useRouter();
+router.push('/clienti');
+```
+
+### Server Component vs Client Component
+
+Di default una pagina Next è un **Server Component**: niente `useState`, `useEffect`, `onClick`.
+
+Se ti servono stato, effetti o eventi browser, in cima al file:
+
+```jsx
+'use client';
+```
+
+La homepage del template lo ha già, perché controlla il backend ogni 4 secondi.
+
+Regola pratica:
+
+- layout, pagine “solo HTML” → senza `'use client'`
+- form, tabelle interattive, `createCrud` / `q` nel browser → `'use client'`
+
+`createCrud` e `q` usano `fetch` nel browser: chiamali da un Client Component (o da un `useEffect` / handler).
+
+### Dati dal backend in una pagina
+
+```jsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { createCrud } from '@/lib/crud.js';
+
+const clienti = createCrud('clienti');
+
+export default function ClientiPage() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    clienti.list().then(setRows);
+  }, []);
+
+  return (
+    <ul>
+      {rows.map((row) => (
+        <li key={row.id}>{row.ragione_sociale}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Stessa cosa con una query custom:
+
+```jsx
+import { q } from '@/lib/crud.js';
+
+const milano = await q('clientiPerCitta', { citta: 'Milano' });
+```
+
+`/api` e `/health` sono inoltrati a Express: dal frontend chiami `fetch('/api/...')` senza scrivere l’host del backend.
+
+Non creare `src/app/api/`: quella cartella in Next diventa un’API del frontend e si scontra con Express.
+
+### Stile
+
+Tailwind è già attivo (`src/app/globals.css`). Classi direttamente nel JSX:
+
+```jsx
+<div className="flex gap-3 p-4">...</div>
+```
+
+Componenti ripetuti (bottoni, tabelle) mettili in `src/components/` e importali nelle pagine.
 
 ---
 
