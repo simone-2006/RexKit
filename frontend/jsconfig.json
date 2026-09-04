@@ -4,7 +4,18 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

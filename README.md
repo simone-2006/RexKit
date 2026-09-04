@@ -1,10 +1,10 @@
 # RexKit
 
-Template per applicazioni con **SQL Server + Express + React**.
+Template per applicazioni con **SQL Server + Express + Next.js**.
 
 Non scrivi controller, route o client HTTP a mano. Il backend legge le tabelle e genera il CRUD. Per le query specifiche dichiari un `define(...)`. Dal frontend usi due funzioni: `createCrud` e `q`.
 
-Le pagine dell’app le costruisci tu in `frontend/src/App.jsx`. Questo repo è vuoto di proposito: è uno starter, non una dashboard.
+Le pagine dell’app le costruisci tu in `frontend/src/app/page.jsx`. Questo repo è uno starter, non una dashboard.
 
 ---
 
@@ -28,7 +28,28 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-Il frontend (Vite) fa da proxy di `/api` verso `http://localhost:3000`. In sviluppo le chiamate restano sullo stesso origin: `fetch('/api/...')`.
+Il frontend (Next.js) inoltra `/api` e `/health` al backend. In sviluppo le chiamate restano sullo stesso origin: `fetch('/api/...')`.
+
+### Porte
+
+Un solo file: `ports.json` nella root.
+
+```json
+{
+  "backend": 3000,
+  "frontend": 5173
+}
+```
+
+Cambia i numeri, riavvia `npm run dev`. Si aggiornano insieme:
+
+- porta Express
+- porta Next.js
+- rewrite `/api` e `/health`
+- CORS del backend
+- indicatore “server attivo” in `app/page.jsx`
+
+Opzionale: `PORT=4000` in `backend/crud-generator/.env` sovrascrive solo la porta backend.
 
 ---
 
@@ -36,13 +57,14 @@ Il frontend (Vite) fa da proxy di `/api` verso `http://localhost:3000`. In svilu
 
 ```
 RexKit/
+  ports.json                     porte backend e frontend
   backend/crud-generator/
     .env                         connessione SQL Server
     src/config/tables.js         whitelist tabelle (opzionale)
     src/api/index.js             qui dichiari le API custom
     src/custom/define.js         funzione define()
   frontend/
-    src/App.jsx                  la tua UI
+    src/app/page.jsx             la tua UI
     src/lib/crud.js              createCrud() e q()
 ```
 
@@ -102,7 +124,7 @@ Sostituisci `clienti` col nome reale della tabella.
 File da importare: `frontend/src/lib/crud.js`
 
 ```js
-import { createCrud } from './lib/crud.js';
+import { createCrud } from '@/lib/crud.js';
 
 const clienti = createCrud('clienti');
 
@@ -286,7 +308,7 @@ Se chiami GET su un’API POST (o il contrario) ottieni `405`.
 ### Dal frontend
 
 ```js
-import { q } from './lib/crud.js';
+import { q } from '@/lib/crud.js';
 
 const attivi = await q('clientiAttivi');
 const milano = await q('clientiPerCitta', { citta: 'Milano' });

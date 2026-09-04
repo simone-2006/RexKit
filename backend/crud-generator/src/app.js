@@ -4,13 +4,14 @@ import { listTables } from './database/schemaReader.js';
 import { generateCrud } from './crud/crudRoutes.js';
 import { customRouter } from './custom/customRoutes.js';
 import { listApis } from './custom/define.js';
+import { frontendOrigins } from './config/ports.js';
 import './api/index.js';
 
 export async function createApp() {
     const app = express();
 
     app.use(cors({
-        origin: ['http://localhost:5173', 'http://127.0.0.1:5173']
+        origin: frontendOrigins
     }));
     app.use(express.json({ limit: '1mb' }));
 
