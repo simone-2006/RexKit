@@ -1,13 +1,5 @@
 import { getPool, sql } from '../config/database.js';
-
-function quote(ident) {
-    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(ident)) {
-        const err = new Error(`Identificatore SQL non valido: ${ident}`);
-        err.status = 400;
-        throw err;
-    }
-    return `[${ident}]`;
-}
+import { quoteIdent as quote } from '../database/identifiers.js';
 
 function getPrimaryKey(columns) {
     return columns.find((col) => col.isPrimaryKey) || null;

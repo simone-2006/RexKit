@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import { listTables } from './database/schemaReader.js';
 import { generateCrud } from './crud/crudRoutes.js';
+import { customRouter } from './custom/customRoutes.js';
+import { listApis } from './custom/define.js';
+import './api/index.js';
 
 export async function createApp() {
     const app = express();
@@ -12,14 +15,23 @@ export async function createApp() {
     app.use(express.json({ limit: '1mb' }));
 
     const tables = await listTables();
+    const queries = listApis();
+
+    for (const api of queries) {
+        if (api.table && !tables.includes(api.table)) {
+            console.warn(`API '${api.name}': tabella '${api.table}' non trovata`);
+        }
+    }
 
     app.get('/health', (req, res) => {
-        res.json({ ok: true, tables });
+        res.json({ ok: true, tables, queries: queries.map((api) => api.name) });
     });
 
     app.get('/api/_tables', (req, res) => {
         res.json({ ok: true, data: tables });
     });
+
+    app.use('/api', customRouter());
 
     for (const table of tables) {
         app.use(`/api/${table}`, generateCrud(table));
