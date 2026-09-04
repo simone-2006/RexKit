@@ -1,0 +1,12 @@
+{
+  "name": "rexkit",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev --prefix backend/crud-generator\" \"npm run dev --prefix frontend\"",
+    "dev:backend": "npm run dev --prefix backend/crud-generator",
+    "dev:frontend": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
