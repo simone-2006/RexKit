@@ -37,10 +37,10 @@ function ServerStatus() {
     <div className="flex items-center gap-1">
       <div
         className={`w-2 h-2 rounded-full ${status === null
-            ? 'bg-gray-300 animate-pulse'
+            ? 'bg-background-secondary animate-pulse'
             : status
-              ? 'bg-green-600'
-              : 'bg-red-500'
+              ? 'bg-success'
+              : 'bg-brand'
           }`}
       ></div>
       <p className="text-gray-600 text-xs">
@@ -56,16 +56,16 @@ function ServerStatus() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-3">
         <h1 className="font-extrabold text-5xl tracking-wider mb-5 relative">
-          <span className="text-black">Rex</span>
-          <span className="text-red-600">Kit</span>
+          <span className="text-text">Rex</span>
+          <span className="text-brand">Kit</span>
         </h1>
         <p className="text-gray-600 text-xs flex items-center">
           Modifica{' '}
-          <span className="font-mono bg-red-100 text-red-600 rounded px-1 mx-1">
-            app/page.jsx
+          <span className="font-mono bg-brand/10 text-brand rounded px-1 mx-1">
+            src/app/page.jsx
           </span>{' '}
           per iniziare
         </p>
