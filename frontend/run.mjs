@@ -1,3 +1,4 @@
+// Avvia Next.js (dev o start) sulla porta definita in ports.json.
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -6,8 +7,9 @@ import { fileURLToPath } from 'node:url';
 const dir = dirname(fileURLToPath(import.meta.url));
 const { frontend } = JSON.parse(readFileSync(join(dir, '../ports.json'), 'utf8'));
 const nextBin = join(dir, 'node_modules/next/dist/bin/next');
+const command = process.argv[2] === 'start' ? 'start' : 'dev';
 
-const child = spawn(process.execPath, [nextBin, 'dev', '-p', String(frontend)], {
+const child = spawn(process.execPath, [nextBin, command, '-p', String(frontend)], {
   cwd: dir,
   stdio: 'inherit'
 });

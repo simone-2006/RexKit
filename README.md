@@ -8,6 +8,20 @@ Le pagine dell’app le costruisci tu in `frontend/src/app/page.jsx`. Questo rep
 
 ---
 
+## Installazione
+
+Dalla root, una volta sola:
+
+```powershell
+npm run setup
+```
+
+Installa le dipendenze di root, backend e frontend.
+
+Poi configura il database: copia `backend/crud-generator/.env.example` in `backend/crud-generator/.env` e compila i valori (vedi [Configurazione database](#configurazione-database)).
+
+---
+
 ## Avvio
 
 Dalla root:
@@ -59,7 +73,8 @@ Opzionale: `PORT=4000` in `backend/crud-generator/.env` sovrascrive solo la port
 RexKit/
   ports.json                     porte backend e frontend
   backend/crud-generator/
-    .env                         connessione SQL Server
+    .env.example                 template della connessione SQL Server
+    .env                         connessione SQL Server (lo crei tu, non si committa)
     src/config/tables.js         whitelist tabelle (opzionale)
     src/api/index.js             qui dichiari le API custom
     src/custom/define.js         funzione define()
@@ -229,7 +244,7 @@ Componenti ripetuti (bottoni, tabelle) mettili in `src/components/` e importali 
 
 ## Configurazione database
 
-File: `backend/crud-generator/.env`
+File: `backend/crud-generator/.env` (parti da `.env.example`)
 
 ```
 PORT=3000
@@ -479,6 +494,26 @@ CRUD e custom non si sovrappongono:
 
 - CRUD → `/api/<tabella>`
 - custom → `/api/q/<nome>`
+
+---
+
+## Produzione
+
+Dalla root:
+
+```powershell
+npm run build
+npm start
+```
+
+- `build` compila il frontend Next.js.
+- `start` avvia backend e frontend in modalità produzione, sulle porte di `ports.json`.
+
+Prima di andare in produzione:
+
+1. Compila la whitelist in `backend/crud-generator/src/config/tables.js`: senza, ogni tabella del database è un'API.
+2. Verifica il `.env` sul server di destinazione (non viaggia con git).
+3. Ricorda che in questa versione non c'è autenticazione: l'app va esposta solo in rete fidata o dietro un proxy che la protegge.
 
 ---
 

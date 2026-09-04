@@ -1,12 +1,12 @@
 {
   "name": "rexkit-frontend",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node dev.mjs",
+    "dev": "node run.mjs dev",
     "build": "next build",
-    "start": "next start"
+    "start": "node run.mjs start"
   },
   "dependencies": {
     "next": "^15.5.2",

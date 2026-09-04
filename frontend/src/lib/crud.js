@@ -43,9 +43,13 @@ export async function listQueries() {
 
 async function catalog() {
   if (!catalogPromise) {
-    catalogPromise = listQueries().then((apis) =>
-      Object.fromEntries(apis.map((api) => [api.name, api]))
-    );
+    catalogPromise = listQueries()
+      .then((apis) => Object.fromEntries(apis.map((api) => [api.name, api])))
+      .catch((err) => {
+        // Non tenere in cache un fallimento: al prossimo q() si riprova.
+        catalogPromise = null;
+        throw err;
+      });
   }
   return catalogPromise;
 }
